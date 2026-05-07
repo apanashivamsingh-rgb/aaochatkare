@@ -1,0 +1,6 @@
+streamlit
+streamlit-webrtc
+streamlit-lottie
+cryptography
+Pillow
+requests
