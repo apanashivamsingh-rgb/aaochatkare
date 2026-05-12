@@ -30,7 +30,7 @@ def strip_exif(img_upload):
     clean_img.putdata(list(img.getdata()))
     return clean_img
 
-# --- 2. HRIDAYA COLORS + WHATSAPP LAYOUT CSS ---
+# --- 2. HRIDAYA COLORS + ADVANCED CSS ---
 st.set_page_config(page_title="Hridaya Secure", page_icon="💖", layout="centered")
 
 st.markdown("""
@@ -68,6 +68,7 @@ st.markdown("""
         border-right: 1px solid rgba(255, 77, 109, 0.3);
     }
 
+    /* Live Header */
     .wa-header {
         background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);
         padding: 10px 15px; display: flex; align-items: center;
@@ -80,13 +81,13 @@ st.markdown("""
         margin-right: 15px; border: 1px solid #ff4d6d; box-shadow: 0 0 10px rgba(255,77,109,0.3);
     }
     .wa-info h3 { margin: 0; font-size: 1.5rem; color: #ff4d6d; font-family: 'Dancing Script', cursive; text-shadow: 0 0 10px rgba(255,77,109,0.5); }
-    .wa-info p { margin: 0; font-size: 0.8rem; color: #ffd1d1; opacity: 0.8;}
+    .wa-info p { margin: 0; font-size: 0.8rem; color: #00ff41; font-weight: bold;}
 
+    /* NATIVE AUTO-SCROLL FIX: column-reverse magic */
     .wa-chat-container {
-        display: flex; flex-direction: column; gap: 8px; padding: 20px;
+        display: flex; flex-direction: column-reverse; gap: 8px; padding: 20px;
         background: rgba(0, 0, 0, 0.2); height: 50vh; overflow-y: auto;
         border-left: 1px solid rgba(255, 77, 109, 0.3); border-right: 1px solid rgba(255, 77, 109, 0.3);
-        scroll-behavior: smooth;
     }
 
     .bubble-me {
@@ -99,6 +100,24 @@ st.markdown("""
         border: 1px solid rgba(255, 77, 109, 0.2); color: #ffd1d1; padding: 8px 10px 10px 12px;
         border-radius: 0px 15px 15px 15px; max-width: 80%; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
+
+    /* ANTI-SCREENSHOT IMAGE (Phantom Mode) */
+    .phantom-img {
+        position: relative; display: inline-block; width: 100%; border-radius: 10px; margin-bottom: 5px;
+    }
+    .phantom-img img {
+        opacity: 0; width: 100%; display: block; border-radius: 10px;
+        pointer-events: none; border: 1px solid rgba(255,77,109,0.3);
+    }
+    .phantom-btn {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: rgba(45, 10, 10, 0.9); border: 1px solid #ff4d6d; color: #ff4d6d;
+        padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; pointer-events: none;
+        box-shadow: 0 0 10px rgba(255,77,109,0.5); white-space: nowrap;
+    }
+    /* Image appears only when clicked/held or hovered */
+    .phantom-img:active img, .phantom-img:hover img { opacity: 1; }
+    .phantom-img:active .phantom-btn, .phantom-img:hover .phantom-btn { opacity: 0; }
 
     .sender-name { font-size: 0.75rem; color: #ff4d6d; font-weight: 600; margin-bottom: 2px; }
     .bubble-me .sender-name { display: none; }
@@ -138,20 +157,6 @@ with st.sidebar:
     alias = st.text_input("👤 NICKNAME", value="Shadow")
     
     if room:
-        vault["presence"][st.session_state.uid] = (room, alias, time.time())
-        active_members = [name for rid, name, t in vault["presence"].values() if rid == room and time.time() - t < 10]
-        unique_members = list(set(active_members))
-        
-        members_html = "".join([f"<p style='margin:2px 0; font-size:0.95rem; color:#ffd1d1;'><span style='color:#00ff41; font-size:0.8rem;'>●</span> {m}</p>" for m in unique_members])
-
-        st.markdown(f"""
-            <div style='background:rgba(255,77,109,0.1); padding:15px; border-radius:20px; border:1px solid #ff4d6d; text-align:center;'>
-                <p style='color:#00ff41; margin:0; font-weight:bold;'>{len(unique_members)} Soul(s) Connected</p>
-                <hr style='border-top: 1px solid rgba(255,77,109,0.3); margin: 10px 0;'>
-                <div style='text-align:left; padding-left:10px;'>{members_html}</div>
-            </div><br>
-        """, unsafe_allow_html=True)
-        
         if st.button("🚨 PANIC (Clear Room)", type="primary", use_container_width=True):
             vault["chats"] = [c for c in vault["chats"] if c['room'] != room]
             st.session_state.clear()
@@ -160,19 +165,8 @@ with st.sidebar:
 # --- 5. INTERFACE LOGIC ---
 if room:
     key = get_key_from_room(room)
-    active_members = [name for rid, name, t in vault["presence"].values() if rid == room and time.time() - t < 10]
-    online_text = " • ".join(list(set(active_members)))
 
-    st.markdown(f"""
-        <div class="wa-header">
-            <div class="wa-avatar">💖</div>
-            <div class="wa-info">
-                <h3>Hridaya Room</h3>
-                <p>{online_text} (typing...)</p>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-
+    # Video Call Expander - Bahar rakha hai taaki disconnect na ho
     with st.expander("🎥 Open Private Call"):
         webrtc_streamer(
             key=f"vcall-{room}",
@@ -181,42 +175,65 @@ if room:
             media_stream_constraints={"video": True, "audio": True},
         )
 
-    # NAYA FIX: Indentation hata di hai taaki RAW HTML render na ho!
+    # FRAGMENT LOGIC: Yaha Member Count aur Chat dono har 2 second me refresh honge!
     @st.fragment(run_every=2)
     def live_chat_feed():
+        # Update user presence dynamically
+        vault["presence"][st.session_state.uid] = (room, alias, time.time())
+        
+        # Calculate Live Online Members
+        active_members = [name for rid, name, t in vault["presence"].values() if rid == room and time.time() - t < 10]
+        unique_members = list(set(active_members))
+        online_text = " • ".join(unique_members)
+        member_count = len(unique_members)
+
+        # Dynamic Live Header
+        st.markdown(f"""
+            <div class="wa-header">
+                <div class="wa-avatar">💖</div>
+                <div class="wa-info">
+                    <h3>Hridaya Room</h3>
+                    <p>● {member_count} Online | {online_text}</p>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        # Chat Cleanup (10 sec rule)
         vault["chats"] = [c for c in vault["chats"] if time.time() - c['time'] < 10]
         
-        chat_html = '<div class="wa-chat-container" id="chat-box">'
-        for c in vault["chats"]:
-            if c['room'] == room:
-                decrypted = decrypt_msg(c['data'], key)
-                safe_text = html.escape(decrypted)
-                bubble_class = "bubble-me" if c['user'] == alias else "bubble-them"
-                msg_time = datetime.fromtimestamp(c['time']).strftime('%H:%M')
-                
-                img_html = ""
-                if c.get("img"):
-                    buffered = BytesIO()
-                    c["img"].save(buffered, format="JPEG")
-                    img_b64 = base64.b64encode(buffered.getvalue()).decode()
-                    img_html = f'<img src="data:image/jpeg;base64,{img_b64}" style="max-width:100%; border-radius:10px; margin-bottom:5px; border: 1px solid rgba(255,77,109,0.3);"><br>'
+        # Get chats for this room
+        room_chats = [c for c in vault["chats"] if c['room'] == room]
+        
+        # CHAT REVERSAL MAGIC: Kyunki CSS me 'column-reverse' hai, 
+        # html tag me message ulti direction me generate honge taaki bottom pe automatically chipke rahe!
+        room_chats.reverse()
+        
+        chat_html = '<div class="wa-chat-container">'
+        for c in room_chats:
+            decrypted = decrypt_msg(c['data'], key)
+            safe_text = html.escape(decrypted)
+            bubble_class = "bubble-me" if c['user'] == alias else "bubble-them"
+            msg_time = datetime.fromtimestamp(c['time']).strftime('%H:%M')
+            
+            img_html = ""
+            if c.get("img"):
+                buffered = BytesIO()
+                c["img"].save(buffered, format="JPEG")
+                img_b64 = base64.b64encode(buffered.getvalue()).decode()
+                # Screenshot-proof Phantom Image
+                img_html = f"""
+                <div class="phantom-img">
+                    <div class="phantom-btn">👁️ Hold to View</div>
+                    <img src="data:image/jpeg;base64,{img_b64}">
+                </div>
+                """
 
-                # Bina kisi space ya naye line ke joda hai
-                chat_html += f'<div class="{bubble_class}"><div class="sender-name">{c["user"]}</div>{img_html}<div class="msg-text">{safe_text}</div><div class="msg-time">{msg_time} ✓✓</div><div class="wipe-timer"></div></div>'
-                
+            chat_html += f'<div class="{bubble_class}"><div class="sender-name">{c["user"]}</div>{img_html}<div class="msg-text">{safe_text}</div><div class="msg-time">{msg_time} ✓✓</div><div class="wipe-timer"></div></div>'
+            
         chat_html += '</div>'
-        
         st.markdown(chat_html, unsafe_allow_html=True)
-        
-        # NAYA FIX: Auto-Scroll Javascript ko Streamlit Components me shift kar diya
-        components.html("""
-        <script>
-            const chat = window.parent.document.querySelector('.wa-chat-container');
-            if(chat) chat.scrollTop = chat.scrollHeight;
-        </script>
-        """, height=0, width=0)
 
-    # Chat function calling
+    # Call the live fragment
     live_chat_feed()
 
     # Input Bar
@@ -234,7 +251,7 @@ if room:
                 "room": room, "user": alias, "data": enc_data,
                 "img": safe_img, "time": time.time()
             })
-            st.rerun()
+            st.rerun() # Submit instantly refreshes the page
     st.markdown("</div>", unsafe_allow_html=True)
 
 else:
