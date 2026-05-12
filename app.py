@@ -122,7 +122,7 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# 🌧️ 100% RELIABLE PURE JS/CSS RAIN (NO GIFs, NO DOGS!)
+# 🌧️ 100% PURE JS/CSS RAIN (NO GIFs, NO DOGS!)
 if rain_mode and not stealth:
     components.html("""
         <script>
@@ -211,10 +211,12 @@ if room:
 
         new_chats = []
         for c in vault["chats"]:
-            if c.get("is_pinned"): new_chats.append(c)
+            if c.get("is_pinned"):
+                new_chats.append(c)
             else:
                 ttl = 4 if c.get("is_snap") else 10
-                if time.time() - c['time'] < ttl: new_chats.append(c)
+                if time.time() - c['time'] < ttl:
+                    new_chats.append(c)
         vault["chats"] = new_chats
         
         room_chats = [c for c in vault["chats"] if c['room'] == room]
@@ -228,7 +230,6 @@ if room:
         for c in room_chats:
             decrypted = decrypt_msg(c['data'], key)
             
-            # HIDDEN REAL HEARTBEAT & SOUND DETECTION
             if "[[HEARTBEAT_SYNC]]" in decrypted:
                 if time.time() - c['time'] < 2: heartbeat_trigger = True
                 continue 
@@ -266,21 +267,15 @@ if room:
             components.html("""
             <script>
                 const p = window.parent.document;
-                
-                // Play heartbeat audio (Google public library)
                 const audio = new Audio("https://actions.google.com/sounds/v1/human_voices/heartbeat.ogg");
-                audio.play().catch(e => console.log("Audio blocked by browser, requires user interaction first."));
+                audio.play().catch(e => console.log("Audio blocked."));
                 
-                // Show Giant Heart
                 const heart = p.createElement('div');
                 heart.innerHTML = "💖";
                 heart.style = "position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); font-size:18rem; z-index:999999; animation: big-beat 1.5s forwards; pointer-events:none;";
                 p.body.appendChild(heart);
                 
-                // Pulse Background
                 p.body.classList.add('heartbeat-active');
-                
-                // Clean up after 1.5 seconds
                 setTimeout(() => { 
                     p.body.classList.remove('heartbeat-active'); 
                     if(heart) heart.remove(); 
@@ -298,13 +293,15 @@ if room:
         st.rerun()
 
     with st.form("input_form", clear_on_submit=True):
-        opt_cols = st.columns(4)
-        is_love_letter = opt_cols[0].checkbox("💌 Love Letter")
-        is_code = opt_cols[1].checkbox("🖥️ Code")
-        is_snap = opt_cols[2].checkbox("🧨 3-Sec Snap")
-        is_pinned = opt_cols[3].checkbox("📌 Pin")
+        # 📦 SARE FEATURES DIBBE ME BAND HAIN YAHAN
+        with st.expander("✨ Message Effects"):
+            opt_cols = st.columns(4)
+            is_love_letter = opt_cols[0].checkbox("💌 Love Letter")
+            is_code = opt_cols[1].checkbox("🖥️ Code")
+            is_snap = opt_cols[2].checkbox("🧨 3-Sec Snap")
+            is_pinned = opt_cols[3].checkbox("📌 Pin")
         
-        # BEAUTIFUL MAGICAL UPLOADER (No more ugly box!)
+        # BEAUTIFUL MAGICAL UPLOADER 
         cols = st.columns([0.7, 0.15, 0.15])
         msg = cols[0].text_input("", placeholder="Whisper your heart...", autocomplete="off")
         upload_file = cols[1].file_uploader("", label_visibility="collapsed")
@@ -339,3 +336,20 @@ else:
             <div style="font-size:6rem; text-shadow: 0 0 40px var(--theme-color); animation: beat 1.5s infinite;">{top_icon}</div>
         </div>
     """, unsafe_allow_html=True)
+
+components.html("""
+<script>
+    const parent = window.parent;
+    if (!parent.inactivityTimerSetup) {
+        parent.inactivityTimerSetup = true;
+        let timeout;
+        function lockProtocol() {
+            parent.document.body.innerHTML = '<div style="background:#050505; height:100vh; width:100vw; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#ff4d6d; position:fixed; z-index:999999;"><div style="font-size:6rem; margin-bottom:20px; text-shadow: 0 0 20px #ff4d6d; animation: beat 1.5s infinite;">💖</div><h1 style="font-size:4rem; margin:0; font-family:\\'Dancing Script\\', cursive; text-shadow: 0 0 20px #ff4d6d;">Connection Severed</h1><p style="font-family:sans-serif; opacity:0.6;">The moment has passed.</p></div>';
+            setTimeout(() => parent.location.reload(), 2000);
+        }
+        function resetTimer() { clearTimeout(timeout); timeout = setTimeout(lockProtocol, 300000); }
+        ['mousemove','mousedown','keypress','touchstart'].forEach(evt => parent.document.addEventListener(evt, resetTimer));
+        resetTimer();
+    }
+</script>
+""", height=0, width=0)
