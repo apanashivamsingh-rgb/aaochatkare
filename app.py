@@ -65,7 +65,7 @@ st.markdown(f"""
 
     .wa-header {{ background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(15px); padding: 12px 20px; display: flex; align-items: center; border-radius: 20px 20px 0 0; border: 1px solid var(--theme-glow); margin-bottom: 0px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); position:relative; z-index:1; }}
     .wa-avatar {{ width: 45px; height: 45px; border-radius: 50%; background-color: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; font-size: 22px; margin-right: 15px; border: 1px solid var(--theme-color); box-shadow: 0 0 15px var(--theme-glow); }}
-    .wa-info h3 {{ margin: 0; font-size: 1.6rem; color: var(--theme-color); font-family: {'"Share Tech Mono", monospace' if stealth else '"Dancing Script", cursive'}; text-shadow: 0 0 10px var(--theme-glow); }}
+    .wa-info h3 {{ margin: 0; font-size: clamp(1.2rem, 5vw, 1.6rem); white-space: nowrap; color: var(--theme-color); font-family: {'"Share Tech Mono", monospace' if stealth else '"Dancing Script", cursive'}; text-shadow: 0 0 10px var(--theme-glow); }}
     .wa-info p {{ margin: 0; font-size: 0.85rem; color: #fff; font-weight: 400; opacity:0.9;}}
     .typing-anim {{ display: inline-block; animation: blink 1s infinite; color: var(--theme-color); font-weight: bold; }}
     @keyframes blink {{ 0%, 100% {{ opacity: 1; }} 50% {{ opacity: 0; }} }}
@@ -93,36 +93,32 @@ st.markdown(f"""
     .wipe-timer {{ height: 3px; background: linear-gradient(90deg, var(--theme-color), transparent); width: 100%; position: absolute; bottom: 0; left: 0; border-radius: 0 0 15px 15px; animation-name: shrink; animation-timing-function: linear; animation-fill-mode: forwards; }}
     @keyframes shrink {{ from {{ width: 100%; }} to {{ width: 0%; }} }}
 
-    .stTextInput input {{ background: rgba(0, 0, 0, 0.4) !important; border: 1px solid var(--theme-glow) !important; border-radius: 30px !important; color: white !important; padding: 14px 20px !important; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); font-size: 1.05rem; }}
+    .stTextInput input {{ background: rgba(0, 0, 0, 0.4) !important; border: 1px solid var(--theme-glow) !important; border-radius: 30px !important; color: white !important; padding: 14px 20px !important; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); font-size: 1.05rem; height: 50px; }}
     
-    /* 🔥 BEAUTIFUL MAGICAL UPLOAD ICON (STARDUST) 🔥 */
-    [data-testid="stFileUploader"] {{ width: 45px !important; margin: 0 auto; display: flex; align-items: center; justify-content: center; }}
-    [data-testid="stFileUploader"] section {{ background: rgba(255, 77, 109, 0.1) !important; border: 2px solid var(--theme-color) !important; border-radius: 50% !important; height: 45px !important; width: 45px !important; padding: 0 !important; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 10px var(--theme-glow); transition: 0.3s; position: relative; overflow: hidden; }}
-    [data-testid="stFileUploader"] section:hover {{ background: rgba(255, 77, 109, 0.3) !important; box-shadow: 0 0 25px var(--theme-color); transform: scale(1.15) rotate(15deg); }}
-    [data-testid="stFileUploader"] section::before {{ content: "✨"; font-size: 22px; position: absolute; text-shadow: 0 0 10px #fff; }}
+    /* 🔥 ULTRA SEXY UPLOAD ICON 🔥 */
+    @keyframes pulse-ring {{ 0% {{ box-shadow: 0 0 10px var(--theme-glow), inset 0 0 5px rgba(255,77,109,0.3); }} 100% {{ box-shadow: 0 0 25px var(--theme-color), inset 0 0 15px rgba(255,77,109,0.8); }} }}
+    [data-testid="stFileUploader"] {{ width: 50px !important; margin: 0 auto; display: flex; align-items: center; justify-content: center; }}
+    [data-testid="stFileUploader"] section {{ background: linear-gradient(145deg, rgba(255,77,109,0.2), rgba(0,0,0,0.8)) !important; border: 2px solid var(--theme-color) !important; border-radius: 50% !important; height: 50px !important; width: 50px !important; padding: 0 !important; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; animation: pulse-ring 1.5s infinite alternate; }}
+    [data-testid="stFileUploader"] section:hover {{ background: linear-gradient(145deg, var(--theme-color), #800f2f) !important; box-shadow: 0 0 30px var(--theme-color), inset 0 0 20px #fff !important; transform: scale(1.15) translateY(-3px); }}
+    [data-testid="stFileUploader"] section::before {{ content: "✨"; font-size: 24px; position: absolute; text-shadow: 0 0 10px #fff; transition: 0.4s; }}
+    [data-testid="stFileUploader"] section:hover::before {{ transform: rotate(20deg) scale(1.2); }}
     [data-testid="stFileUploader"] .css-17xejub, [data-testid="stFileUploader"] small, [data-testid="stFileUploader"] .css-9ycgxx, [data-testid="stFileUploader"] svg, [data-testid="stFileUploader"] span {{ display: none !important; opacity: 0; }}
 
-    /* GIANT BEATING HEART ANIMATION */
-    @keyframes big-beat {{
-        0% {{ transform: translate(-50%, -50%) scale(1); opacity: 0.8; filter: drop-shadow(0 0 30px #ff4d6d); }}
-        20% {{ transform: translate(-50%, -50%) scale(1.3); opacity: 1; filter: drop-shadow(0 0 80px #ff4d6d); }}
-        40% {{ transform: translate(-50%, -50%) scale(1.1); opacity: 0.9; filter: drop-shadow(0 0 50px #ff4d6d); }}
-        60% {{ transform: translate(-50%, -50%) scale(1.4); opacity: 1; filter: drop-shadow(0 0 100px #ff4d6d); }}
-        100% {{ transform: translate(-50%, -50%) scale(1); opacity: 0; filter: drop-shadow(0 0 10px #ff4d6d); }}
-    }}
+    /* 🔥 STYLISH FORM BUTTONS 🔥 */
+    div[data-testid="stForm"] button[kind="secondary"] {{ border-radius: 30px !important; background: rgba(0,0,0,0.6) !important; border: 1px solid var(--theme-color) !important; color: var(--theme-color) !important; font-weight: bold !important; height: 50px !important; transition: 0.3s; box-shadow: 0 0 10px var(--theme-glow); }}
+    div[data-testid="stForm"] button[kind="secondary"]:hover {{ background: var(--theme-color) !important; color: black !important; box-shadow: 0 0 20px var(--theme-color) !important; transform: scale(1.05); }}
     
-    @keyframes screen-pulse {{
-        0% {{ box-shadow: inset 0 0 0px rgba(255, 77, 109, 0); }}
-        25% {{ box-shadow: inset 0 0 100px rgba(255, 77, 109, 0.8); }}
-        50% {{ box-shadow: inset 0 0 20px rgba(255, 77, 109, 0.4); }}
-        75% {{ box-shadow: inset 0 0 150px rgba(255, 77, 109, 0.9); background: rgba(255,77,109,0.1); }}
-        100% {{ box-shadow: inset 0 0 0px rgba(255, 77, 109, 0); }}
-    }}
+    div[data-testid="stForm"] button[kind="primary"] {{ background: linear-gradient(45deg, #ff4d6d, #800f2f) !important; border: none !important; border-radius: 30px !important; color: white !important; font-weight: bold !important; padding: 10px !important; box-shadow: 0 5px 15px rgba(255,77,109,0.5) !important; transition: 0.3s !important; animation: beat 1.5s infinite !important; }}
+    div[data-testid="stForm"] button[kind="primary"]:hover {{ transform: scale(1.03) !important; box-shadow: 0 8px 25px rgba(255,77,109,0.8) !important; }}
+
+    /* GIANT BEATING HEART ANIMATION */
+    @keyframes big-beat {{ 0% {{ transform: translate(-50%, -50%) scale(1); opacity: 0.8; filter: drop-shadow(0 0 30px #ff4d6d); }} 20% {{ transform: translate(-50%, -50%) scale(1.3); opacity: 1; filter: drop-shadow(0 0 80px #ff4d6d); }} 40% {{ transform: translate(-50%, -50%) scale(1.1); opacity: 0.9; filter: drop-shadow(0 0 50px #ff4d6d); }} 60% {{ transform: translate(-50%, -50%) scale(1.4); opacity: 1; filter: drop-shadow(0 0 100px #ff4d6d); }} 100% {{ transform: translate(-50%, -50%) scale(1); opacity: 0; filter: drop-shadow(0 0 10px #ff4d6d); }} }}
+    @keyframes screen-pulse {{ 0% {{ box-shadow: inset 0 0 0px rgba(255, 77, 109, 0); }} 25% {{ box-shadow: inset 0 0 100px rgba(255, 77, 109, 0.8); }} 50% {{ box-shadow: inset 0 0 20px rgba(255, 77, 109, 0.4); }} 75% {{ box-shadow: inset 0 0 150px rgba(255, 77, 109, 0.9); background: rgba(255,77,109,0.1); }} 100% {{ box-shadow: inset 0 0 0px rgba(255, 77, 109, 0); }} }}
     .heartbeat-active {{ animation: screen-pulse 1.2s ease-in-out !important; }}
     </style>
 """, unsafe_allow_html=True)
 
-# 🌧️ 100% PURE JS/CSS RAIN (NO GIFs, NO DOGS!)
+# 🌧️ 100% PURE JS/CSS RAIN
 if rain_mode and not stealth:
     components.html("""
         <script>
@@ -285,29 +281,35 @@ if room:
         
     live_chat_feed()
 
-    # NAYA FIX: TOUCH HEARTBEAT BUTTON
-    st.markdown("<div style='background:rgba(255,255,255,0.02); padding:15px; border-radius:0 0 20px 20px; border: 1px solid var(--theme-glow); border-top:none; box-shadow: 0 10px 30px rgba(0,0,0,0.6);'>", unsafe_allow_html=True)
+    # --- REARRANGED INPUT AREA (Perfect Layout) ---
+    st.markdown("<div style='background:rgba(255,255,255,0.02); padding:20px 15px 15px 15px; border-radius:0 0 20px 20px; border: 1px solid var(--theme-glow); border-top:none; box-shadow: 0 10px 30px rgba(0,0,0,0.6);'>", unsafe_allow_html=True)
     
-    if st.button("💓 Tap to Sync Heartbeat", use_container_width=True):
-        vault["chats"].append({"room": room, "user": alias, "data": encrypt_msg("[[HEARTBEAT_SYNC]]", key), "time": time.time(), "is_snap": False, "is_pinned": False})
-        st.rerun()
-
     with st.form("input_form", clear_on_submit=True):
-        # 📦 SARE FEATURES DIBBE ME BAND HAIN YAHAN
-        with st.expander("✨ Message Effects"):
-            opt_cols = st.columns(4)
-            is_love_letter = opt_cols[0].checkbox("💌 Love Letter")
-            is_code = opt_cols[1].checkbox("🖥️ Code")
-            is_snap = opt_cols[2].checkbox("🧨 3-Sec Snap")
-            is_pinned = opt_cols[3].checkbox("📌 Pin")
         
-        # BEAUTIFUL MAGICAL UPLOADER 
+        # 1. INPUT ROW (Top)
         cols = st.columns([0.7, 0.15, 0.15])
         msg = cols[0].text_input("", placeholder="Whisper your heart...", autocomplete="off")
         upload_file = cols[1].file_uploader("", label_visibility="collapsed")
         send = cols[2].form_submit_button("➤")
         
-        if send and (msg or upload_file):
+        # 2. HEARTBEAT SYNC BUTTON (Middle)
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+        hb_send = st.form_submit_button("💓 Tap to Sync Heartbeat", type="primary", use_container_width=True)
+        
+        # 3. MESSAGE EFFECTS PANEL (Bottom)
+        with st.expander("✨ Message Effects"):
+            opt_cols = st.columns(4)
+            is_love_letter = opt_cols[0].checkbox("💌 Love Letter")
+            is_code = opt_cols[1].checkbox("🖥️ Code")
+            is_snap = opt_cols[2].checkbox("🧨 3-Sec Snap")
+            is_pinned = opt_cols[3].checkbox("📌 Pin Message")
+        
+        # Logic Processing inside Form
+        if hb_send:
+            vault["chats"].append({"room": room, "user": alias, "data": encrypt_msg("[[HEARTBEAT_SYNC]]", key), "time": time.time(), "is_snap": False, "is_pinned": False})
+            st.rerun()
+            
+        elif send and (msg or upload_file):
             file_b64 = None; file_ext = ""
             if upload_file:
                 file_ext = upload_file.name.split('.')[-1].lower() if '.' in upload_file.name else "file"
@@ -324,13 +326,14 @@ if room:
                 "file_b64": file_b64, "file_ext": file_ext, "time": time.time()
             })
             st.rerun()
+            
     st.markdown("</div>", unsafe_allow_html=True)
 
 else:
     st.markdown(f"""
-        <div style="text-align:center; padding:50px; background:rgba(0,0,0,0.6); border-radius:30px; border:1px solid var(--theme-color); box-shadow: 0 0 50px var(--theme-glow); position:relative; z-index:1; backdrop-filter:blur(10px);">
-            <h1 style="font-size:4.5rem; color:var(--theme-color); font-family:inherit; text-shadow: 0 0 25px var(--theme-color); margin-bottom: 0;">{app_title}</h1>
-            <p style="font-size:1.3rem; opacity:0.9; color: #fff; letter-spacing:1px;">Encrypted. Ephemeral. Yours.</p>
+        <div style="text-align:center; padding:50px 20px; background:rgba(0,0,0,0.6); border-radius:30px; border:1px solid var(--theme-color); box-shadow: 0 0 50px var(--theme-glow); position:relative; z-index:1; backdrop-filter:blur(10px);">
+            <h1 style="font-size:clamp(2.5rem, 10vw, 4.5rem); white-space:nowrap; color:var(--theme-color); font-family:inherit; text-shadow: 0 0 25px var(--theme-color); margin-bottom: 0;">{app_title}</h1>
+            <p style="font-size:clamp(1rem, 4vw, 1.3rem); opacity:0.9; color: #fff; letter-spacing:1px; margin-top: 5px;">Encrypted. Ephemeral. Yours.</p>
             <hr style="border:1px solid var(--theme-glow); margin: 25px 0;">
             <p style="font-size: 1.1rem; color: #ffd1d1;">Enter your <b>Private Frequency</b> to connect.</p>
             <div style="font-size:6rem; text-shadow: 0 0 40px var(--theme-color); animation: beat 1.5s infinite;">{top_icon}</div>
@@ -344,7 +347,7 @@ components.html("""
         parent.inactivityTimerSetup = true;
         let timeout;
         function lockProtocol() {
-            parent.document.body.innerHTML = '<div style="background:#050505; height:100vh; width:100vw; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#ff4d6d; position:fixed; z-index:999999;"><div style="font-size:6rem; margin-bottom:20px; text-shadow: 0 0 20px #ff4d6d; animation: beat 1.5s infinite;">💖</div><h1 style="font-size:4rem; margin:0; font-family:\\'Dancing Script\\', cursive; text-shadow: 0 0 20px #ff4d6d;">Connection Severed</h1><p style="font-family:sans-serif; opacity:0.6;">The moment has passed.</p></div>';
+            parent.document.body.innerHTML = '<div style="background:#050505; height:100vh; width:100vw; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#ff4d6d; position:fixed; z-index:999999;"><div style="font-size:6rem; margin-bottom:20px; text-shadow: 0 0 20px #ff4d6d; animation: beat 1.5s infinite;">💖</div><h1 style="font-size:clamp(2rem, 8vw, 4rem); margin:0; font-family:\\'Dancing Script\\', cursive; text-shadow: 0 0 20px #ff4d6d;">Connection Severed</h1><p style="font-family:sans-serif; opacity:0.6;">The moment has passed.</p></div>';
             setTimeout(() => parent.location.reload(), 2000);
         }
         function resetTimer() { clearTimeout(timeout); timeout = setTimeout(lockProtocol, 300000); }
